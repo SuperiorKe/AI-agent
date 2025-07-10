@@ -14,6 +14,8 @@ import json
 from langgraph.types import Command, interrupt
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.messages import SystemMessage
+import requests
+from bs4 import BeautifulSoup
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -62,6 +64,43 @@ def human_assistance(query: str) -> str:
     # This will raise a Command exception that gets caught by the stream handler
     return interrupt({"query": query})
 
+@tool
+def browse_web_page(url: str) -> str:
+    """Browses a web page and returns its text content.
+
+    Args:
+        url: The URL of the web page to browse.
+
+    Returns:
+        The text content of the web page, or an error message if fetching fails.
+    """
+    if not url or not url.startswith(('http://', 'https://')):
+        return "Invalid URL. Please provide a full and valid URL starting with http:// or https://."
+
+    try:
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+        response = requests.get(url, headers=headers, timeout=10)
+        response.raise_for_status()  # Raise an exception for bad status codes
+        soup = BeautifulSoup(response.content, 'html.parser')
+        
+        # Remove script and style elements
+        for script_or_style in soup(['script', 'style']):
+            script_or_style.decompose()
+            
+        # Get text and clean it up
+        text = soup.get_text()
+        lines = (line.strip() for line in text.splitlines())
+        chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
+        text = '\n'.join(chunk for chunk in chunks if chunk)
+        
+        return text[:5000] # Return the first 5000 characters to avoid being too long
+    except requests.exceptions.RequestException as e:
+        return f"Error fetching URL: {e}"
+    except Exception as e:
+        return f"An unexpected error occurred: {e}"
+
 class ConversationalAgent:
     """Main chatbot class with improved error handling and state management"""
 
@@ -76,7 +115,7 @@ class ConversationalAgent:
 
         # Set up tools
         tavily_search = TavilySearch(max_results=2)
-        tools = [tavily_search, human_assistance]
+        tools = [tavily_search, human_assistance, browse_web_page]
 
         # Initialize LLM with tools
         try:
@@ -88,8 +127,14 @@ class ConversationalAgent:
 
         # Create a system prompt to guide the LLM's tool usage
         system_prompt = (
-            "You are a helpful assistant. You have access to a search tool and a special tool to request human assistance. "
-            "If the user asks for 'expert guidance', 'human help', or explicitly asks you to 'request assistance', "
+            "You are a helpful assistant. You have access to the following tools:\n"
+            "1. A search tool ('tavily_search') to find information on the web.\n"
+            "2. A web browsing tool ('browse_web_page') to read the content of a specific URL.\n"
+            "3. A special tool ('human_assistance') to request human help.\n\n"
+            "- If the user provides a URL, use the 'browse_web_page' tool to read its content.\n"
+            "- If the user asks you to browse a page without providing a URL, you MUST ask for one.\n"
+            "- For general questions, use the 'tavily_search' tool.\n"
+            "- If the user asks for 'expert guidance', 'human help', or explicitly asks you to 'request assistance', "
             "you MUST use the 'human_assistance' tool. Do not try to answer these queries yourself."
         )
 

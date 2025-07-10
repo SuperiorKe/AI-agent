@@ -7,6 +7,7 @@ A production-ready, extensible conversational AI chatbot built with [LangGraph](
 ## Features
 - **Conversational AI**: Powered by Google Gemini or other supported LLMs
 - **Web Search**: Integrates Tavily for up-to-date information
+- **Web Page Browsing**: Can read and summarize the content of specific URLs.
 - **Tracing & Monitoring**: Optional LangSmith integration for debugging and analytics
 - **Configurable**: All API keys and settings managed via `.env`
 - **Extensible**: Add tools or swap LLMs with minimal code changes
@@ -66,7 +67,7 @@ python basic_chatbot.py
 ```
 
 - Type your questions at the prompt.
-- The chatbot uses Gemini for conversation and Tavily for web search when needed.
+- The chatbot uses Gemini for conversation, Tavily for web search, and can browse specific URLs if you provide them.
 - If LangSmith tracing is enabled, all interactions are logged for analytics.
 - To exit, type `quit`, `exit`, or `q`.
 
@@ -87,7 +88,7 @@ python basic_chatbot.py
 ---
 
 ## Extending the Chatbot
-- **Add More Tools**: Import and add new tools to the `tools` list in `basic_chatbot.py`.
+- **Add More Tools**: Import and add new tools to the `tools` list in `basic_chatbot.py`. For example, the `browse_web_page` tool was added to allow the agent to read content from URLs.
 - **Change LLM Provider**: Update `CHATBOT_MODEL` and `CHATBOT_API_KEY` in `.env`.
 - **Tracing**: View traces and analytics in your [LangSmith dashboard](https://smith.langchain.com/).
 
