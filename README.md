@@ -1,28 +1,38 @@
-# Conversational AI Chatbot (LangGraph, Gemini, Tavily, LangSmith)
+# AI Content Assistant – Conversational Chatbot
 
-A production-ready, extensible conversational AI chatbot built with [LangGraph](https://github.com/langchain-ai/langgraph), [LangChain](https://github.com/langchain-ai/langchain), and Google Gemini. Features include real-time web search via Tavily and optional tracing/monitoring with LangSmith. Easily configurable for different LLM providers and tools using environment variables.
+A modern, production-ready conversational AI assistant for content creation, research, and social media management.  
+Built with [LangGraph](https://github.com/langchain-ai/langgraph), [LangChain](https://github.com/langchain-ai/langchain), [Streamlit](https://streamlit.io/), and Google Gemini.  
+Includes real-time web search (Tavily), web page browsing, and a beautiful chat UI.
 
 ---
 
 ## Features
-- **Conversational AI**: Powered by Google Gemini or other supported LLMs
-- **Web Search**: Integrates Tavily for up-to-date information
-- **Web Page Browsing**: Can read and summarize the content of specific URLs.
-- **Tracing & Monitoring**: Optional LangSmith integration for debugging and analytics
-- **Configurable**: All API keys and settings managed via `.env`
-- **Extensible**: Add tools or swap LLMs with minimal code changes
+
+- **Conversational AI**: Powered by Google Gemini, OpenAI, or Anthropic (configurable).
+- **Modern Chat UI**: Streamlit web app with instant user bubbles and natural assistant responses.
+- **Web Search**: Integrates Tavily for up-to-date information.
+- **Web Page Browsing**: Reads and summarizes content from any URL.
+- **Content Creation**: Generates LinkedIn posts, Twitter threads, and more.
+- **Content Scheduling**: Simulate scheduling posts for later.
+- **Extensible Tools**: Easily add or swap tools and LLMs.
+- **Robust Error Handling**: Clean error messages and dev-friendly warnings.
+- **Testing**: Includes a comprehensive test suite for all major features.
+- **Environment-based Config**: All keys/settings via `.env` file.
+- **Startup-Friendly**: Minimal, readable, and easy to extend.
 
 ---
 
 ## Quick Start
 
 ### 1. Clone the Repository
+
 ```sh
 git clone <your-repo-url>
 cd AGENT
 ```
 
-### 2. Create and Activate a Virtual Environment (Recommended)
+### 2. Create and Activate a Virtual Environment
+
 ```sh
 python -m venv venv
 # On Windows:
@@ -32,11 +42,13 @@ source venv/bin/activate
 ```
 
 ### 3. Install Dependencies
+
 ```sh
 pip install -r requirements.txt
 ```
 
 ### 4. Configure Environment Variables
+
 Create a `.env` file in the project root:
 
 ```
@@ -47,29 +59,72 @@ CHATBOT_API_KEY=your-gemini-api-key     # Gemini, OpenAI, or Anthropic API key
 # Tavily Search
 TAVILY_API_KEY=your-tavily-api-key      # Get from https://app.tavily.com/
 
-# LangSmith Tracing (optional)
+# (Optional) LangSmith Tracing
 LANGSMITH_TRACING=true
 LANGSMITH_ENDPOINT=https://api.smith.langchain.com
 LANGSMITH_API_KEY=your-langsmith-api-key
 LANGSMITH_PROJECT=basic_chatbot
 ```
 
-- Replace all `your-...-api-key` values with your actual API keys.
-- To use OpenAI or Anthropic, update `CHATBOT_MODEL` and `CHATBOT_API_KEY` accordingly.
-
 ---
 
 ## Usage
 
-Run the chatbot interactively:
+### **Web App (Recommended)**
+
+Launch the Streamlit chat UI:
+
+```sh
+streamlit run streamlit_app.py
+```
+
+- Open your browser to the local URL shown (usually http://localhost:8501).
+- Type your message and press Enter.
+- Your message appears instantly; the assistant’s response appears as soon as it’s ready.
+
+### **Command-Line Chatbot**
+
 ```sh
 python basic_chatbot.py
 ```
 
-- Type your questions at the prompt.
-- The chatbot uses Gemini for conversation, Tavily for web search, and can browse specific URLs if you provide them.
-- If LangSmith tracing is enabled, all interactions are logged for analytics.
-- To exit, type `quit`, `exit`, or `q`.
+- Interact with the agent via the terminal.
+
+---
+
+## How the Chat UI Works
+
+- **Instant Feedback:** Your message appears in the chat immediately.
+- **Natural Flow:** The assistant’s response is generated in the background and appears in its own bubble.
+- **No Delays:** No more waiting for both bubbles to appear at once.
+- **Classic Chat Experience:** Just like modern messaging apps.
+
+---
+
+## Testing
+
+Run the test suite to verify all features:
+
+```sh
+python test_basic_chatbot.py
+```
+
+- Tests cover LinkedIn post generation, Twitter threads, scheduling, web browsing, error handling, and end-to-end chat flow.
+
+---
+
+## Project Structure
+
+```
+AGENT/
+  basic_chatbot.py         # Main chatbot logic and tools
+  streamlit_app.py         # Streamlit web app UI
+  test_basic_chatbot.py    # Automated tests for all features
+  requirements.txt         # All dependencies
+  README.md                # This file
+  static/                  # (Optional) Static assets for UI
+  templates/               # (Optional) HTML templates
+```
 
 ---
 
@@ -88,20 +143,24 @@ python basic_chatbot.py
 ---
 
 ## Extending the Chatbot
-- **Add More Tools**: Import and add new tools to the `tools` list in `basic_chatbot.py`. For example, the `browse_web_page` tool was added to allow the agent to read content from URLs.
-- **Change LLM Provider**: Update `CHATBOT_MODEL` and `CHATBOT_API_KEY` in `.env`.
-- **Tracing**: View traces and analytics in your [LangSmith dashboard](https://smith.langchain.com/).
+
+- **Add More Tools:** Import and add new tools to the `tools` list in `basic_chatbot.py`.
+- **Change LLM Provider:** Update `CHATBOT_MODEL` and `CHATBOT_API_KEY` in `.env`.
+- **UI Customization:** Edit `streamlit_app.py` for new features or design tweaks.
+- **Testing:** Add or modify tests in `test_basic_chatbot.py`.
 
 ---
 
 ## Resources
+
 - [LangGraph Documentation](https://langchain-ai.github.io/langgraph/)
 - [LangChain Documentation](https://python.langchain.com/docs/)
 - [Tavily Search](https://app.tavily.com/)
-- [LangSmith](https://smith.langchain.com/)
+- [Streamlit](https://streamlit.io/)
 - [Google Gemini](https://ai.google.dev/)
 
 ---
 
 ## License
+
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.

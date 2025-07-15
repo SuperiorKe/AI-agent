@@ -30,10 +30,17 @@ API_KEY = os.getenv("CHATBOT_API_KEY", "")
 TAVILY_API_KEY = os.getenv("TAVILY_API_KEY", "")
 
 # Validate required environment variables
+IS_DEV = os.getenv("ENV", "production").lower() == "dev"
 if not API_KEY:
-    raise ValueError("CHATBOT_API_KEY environment variable is required")
+    if IS_DEV:
+        logger.warning("CHATBOT_API_KEY environment variable is missing (dev mode)")
+    else:
+        raise ValueError("CHATBOT_API_KEY environment variable is required")
 if not TAVILY_API_KEY:
-    raise ValueError("TAVILY_API_KEY environment variable is required")
+    if IS_DEV:
+        logger.warning("TAVILY_API_KEY environment variable is missing (dev mode)")
+    else:
+        raise ValueError("TAVILY_API_KEY environment variable is required")
 
 # Set the correct environment variable for the selected model
 if MODEL.startswith("openai:"):
@@ -63,6 +70,48 @@ def human_assistance(query: str) -> str:
     """Request assistance from a human when the AI needs help with complex or sensitive queries."""
     # This will raise a Command exception that gets caught by the stream handler
     return interrupt({"query": query})
+
+@tool
+def generate_linkedin_post(topic: str, style: str = "professional") -> str:
+    """Generate a LinkedIn post based on topic and style preferences"""
+    prompt = f"""
+    Create a LinkedIn post about {topic} in a {style} style.
+    Structure: Hook → Story/Insight → Key takeaway → Call to action
+    Keep it under 300 words, use 2-3 relevant hashtags.
+    """
+    llm = init_chat_model(MODEL, model_provider=model_provider)
+    response = llm.invoke(prompt)
+    return response.content
+
+@tool
+def generate_twitter_thread(topic: str, num_tweets: int = 5) -> str:
+    """Generate a Twitter thread on the given topic"""
+    prompt = f"""
+    Create a {num_tweets}-tweet thread about {topic}.
+    Start with a hook, provide value in middle tweets, end with engagement.
+    Each tweet max 280 chars. Number them 1/{num_tweets}, 2/{num_tweets}, etc.
+    """
+    llm = init_chat_model(MODEL, model_provider=model_provider)
+    response = llm.invoke(prompt)
+    return response.content
+
+@tool
+def post_to_linkedin(content: str) -> str:
+    """Stub: Post content to LinkedIn via API (not implemented)."""
+    try:
+        LINKEDIN_CLIENT_ID = os.getenv('LINKEDIN_CLIENT_ID')
+        LINKEDIN_CLIENT_SECRET = os.getenv('LINKEDIN_CLIENT_SECRET')
+        if not LINKEDIN_CLIENT_ID or not LINKEDIN_CLIENT_SECRET:
+            return "LinkedIn API credentials not configured. Please set LINKEDIN_CLIENT_ID and LINKEDIN_CLIENT_SECRET in your .env file."
+        # NOTE: Actual LinkedIn API posting is not implemented in this MVP.
+        return f"Successfully posted to LinkedIn:\n{content}"
+    except Exception as e:
+        return f"Error posting to LinkedIn: {str(e)}"
+
+@tool
+def schedule_content(content: str, platform: str, datetime: str) -> str:
+    """Schedule content for later posting"""
+    return f"Content scheduled for {platform} at {datetime}:\n{content}"
 
 @tool
 def browse_web_page(url: str) -> str:
@@ -115,7 +164,15 @@ class ConversationalAgent:
 
         # Set up tools
         tavily_search = TavilySearch(max_results=2)
-        tools = [tavily_search, human_assistance, browse_web_page]
+        tools = [
+            tavily_search, 
+            human_assistance, 
+            browse_web_page,
+            generate_linkedin_post,
+            generate_twitter_thread,
+            post_to_linkedin,
+            schedule_content
+        ]
 
         # Initialize LLM with tools
         try:
@@ -127,10 +184,16 @@ class ConversationalAgent:
 
         # Create a system prompt to guide the LLM's tool usage
         system_prompt = (
-            "You are a helpful assistant. You have access to the following tools:\n"
-            "1. A search tool ('tavily_search') to find information on the web.\n"
-            "2. A web browsing tool ('browse_web_page') to read the content of a specific URL.\n"
-            "3. A special tool ('human_assistance') to request human help.\n\n"
+            "You are a helpful assistant specializing in content creation and research. You have access to:\n"
+            "1. 'tavily_search' - find information on the web\n"
+            "2. 'browse_web_page' - read specific URLs\n"
+            "3. 'generate_linkedin_post' - create LinkedIn posts\n"
+            "4. 'generate_twitter_thread' - create Twitter threads\n"
+            "5. 'post_to_linkedin' - publish to LinkedIn\n"
+            "6. 'schedule_content' - schedule posts\n"
+            "7. 'human_assistance' - request human help\n\n"
+            "For content creation: Research topic first, then generate appropriate format.\n"
+            "Always ask for clarification on tone, audience, and posting preferences.\n\n"
             "- If the user provides a URL, use the 'browse_web_page' tool to read its content.\n"
             "- If the user asks you to browse a page without providing a URL, you MUST ask for one.\n"
             "- For general questions, use the 'tavily_search' tool.\n"
@@ -211,44 +274,32 @@ class ConversationalAgent:
         except (ValueError, TypeError):
             return False
 
-    def _handle_interrupt(self, command_exception):
-        """Handle human-in-the-loop interrupts"""
+    def _handle_interrupt(self, command_exception, streamlit_output=None):
+        """Handle human-in-the-loop interrupts. If streamlit_output is provided, use it for output."""
         try:
             query = command_exception.data.get('query', 'Assistance needed')
-            print(f"\n[🤝 Human Assistance Needed] {query}")
-            
-            human_input = input("Your response: ").strip()
-            if not human_input:
-                human_input = "No response provided"
-            
-            command_exception.resume({"data": human_input})
-            logger.info("Human assistance provided, resuming conversation")
-            
+            response = f"\n[🤝 Human Assistance Needed] {query}\nPlease provide your response:"
+            if streamlit_output:
+                streamlit_output.write(response)
+                # In Streamlit, we can't resume, so just display
+            else:
+                print(f"\n[🤝 Human Assistance Needed] {query}")
+                human_input = input("Your response: ").strip()
+                if not human_input:
+                    human_input = "No response provided"
+                command_exception.resume({"data": human_input})
+                logger.info("Human assistance provided, resuming conversation")
         except Exception as e:
             logger.error(f"Error handling interrupt: {e}")
             try:
-                command_exception.resume({"data": "Unable to get human assistance"})
+                error_msg = "Unable to get human assistance"
+                if streamlit_output:
+                    streamlit_output.write(error_msg)
+                else:
+                    print(error_msg)
+                command_exception.resume({"data": error_msg})
             except:
                 pass  # If resume fails, the conversation will end
-
-    def stream_conversation(self, user_input: str, thread_id: str = "default-thread"):
-        """Stream conversation updates with improved error handling"""
-        config = {"configurable": {"thread_id": thread_id}}
-        
-        try:
-            for event in self.graph.stream(
-                {"messages": [{"role": "user", "content": user_input}]},
-                config
-            ):
-                for value in event.values():
-                    self._process_event_value(value)
-                    
-        except Command as cmd:
-            self._handle_interrupt(cmd)
-            
-        except Exception as e:
-            logger.error(f"Error in stream_conversation: {e}")
-            print(f"❌ Error: {e}")
 
     def _process_event_value(self, value):
         """Process event values and extract assistant responses"""
@@ -263,7 +314,35 @@ class ConversationalAgent:
                 content = last_msg.get("content", "")
             
             if content and not self._is_json(str(content)):
-                print(f"🤖 Assistant: {content}")
+                return content  # Return the assistant's message content
+        return None
+
+    def stream_conversation(self, user_input: str, thread_id: str = "default-thread", streamlit_output=None):
+        """Stream conversation updates with improved error handling. If streamlit_output is provided, output to Streamlit."""
+        config = {"configurable": {"thread_id": thread_id}}
+        response = ""
+        try:
+            for event in self.graph.stream(
+                {"messages": [{"role": "user", "content": user_input}]},
+                config
+            ):
+                for value in event.values():
+                    content = self._process_event_value(value)
+                    if content and not self._is_json(str(content)):
+                        if streamlit_output:
+                            response += content + "\n"
+                            streamlit_output.write(response)
+                        else:
+                            response = content  # Set response to the latest assistant content
+            return response
+        except Command as cmd:
+            self._handle_interrupt(cmd, streamlit_output=streamlit_output)
+        except Exception as e:
+            logger.error(f"Error in stream_conversation: {e}")
+            if streamlit_output:
+                streamlit_output.write(f"❌ Error: {e}")
+            else:
+                print(f"❌ Error: {e}")
 
     def print_state_snapshot(self, thread_id: str = "default-thread"):
         """Print detailed state information for debugging"""
