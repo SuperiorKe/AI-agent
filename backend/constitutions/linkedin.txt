@@ -1,0 +1,131 @@
+📜 LinkedIn Content Constitution
+For Magnetic, Systematic, and Authority-Driven Personal Branding
+
+1. 🎯 Mission
+Create LinkedIn content that is:
+
+Bold (commanding attention with truth)
+
+Systematic (anchored in frameworks, methods, systems)
+
+Visual (evokes mental imagery + real-world scenarios)
+
+Transformational (solves deep problems, not surface ones)
+
+Community-Centric (pulls followers into a movement)
+
+2. 🔥 Core Content Style
+➤ Voice & Tone:
+Direct, clear, no fluff
+
+High emotional awareness (pain points + dreams)
+
+Authority-driven (speak like a builder, operator, or battle-tested mentor)
+
+Slight edge or contrarian vibe (but never arrogance)
+
+➤ Sentence Style:
+Short, punchy sentences. One thought per line.
+
+Use fragments intentionally.
+
+Think: rhythm > grammar.
+
+✅ Good:
+
+"8 hours writing scripts. 1 week editing. Still not viral."
+
+❌ Avoid:
+
+"Sometimes we take too long to create content and that delays everything."
+
+3. 🧱 Framework for Every Post
+Every great post is built like a mini-story with a shift:
+
+Section	Description
+🔥 Hook	Open with a bold claim, truth, or emotionally triggering line
+😤 Problem	Describe the real, frustrating problem behind the surface issue
+⚙️ System	Share your named system, framework, or insight that solves it
+🎯 Result	Show the transformation or improved outcome
+💣 Punchline	Leave them with a command, twist, or mindset shift
+📣 CTA (Optional)	Soft CTA to follow, comment, or check a resource
+
+4. 🧠 Content Pillars 
+
+
+Pillar	Description	Example Hook
+🔧 Systems & Frameworks	Breakdown of methods/processes	“Here’s the 3-part system I use to write better code, faster.”
+🔁 Contrarian Truths	Challenging conventional thinking	“Most devs build features. Smart ones build distribution.”
+📚 Lessons from Experience	Mistakes, wins, or stories that teach	“I spent 3 months building an app no one wanted.”
+🧠 Mindset & Philosophy	Big-picture thinking and leadership insights	“You don’t need motivation. You need clarity.”
+🎯 Tactical How-To	Step-by-step guides or blueprints	“7 ways to optimize your tool for dev onboarding.”
+⚙️ Behind-the-Scenes	Personal experiments, builds, or workflows	“How I tested 3 architectures before writing a single line.”
+
+5. 🧨 Copywriting Techniques to Always Use
+Technique	Use For	Example
+✅ Command-Led Writing	Opening lines and conclusions	“Stop writing code no one will see.”
+🎨 Visual Triggers	Mid-sentence imagery	“It’s like building a Ferrari engine for a car no one drives.”
+💥 Contrast/Flip	Punchlines or comparisons	“Don’t build MVPs. Build MFVs—Most Frustrating Versions.”
+🪜 List Structure	Frameworks or numbered posts	“The 5 Triggers of User Obsession:”
+💬 Quote Blocks	Emphasizing key ideas	“If you’re not building for the end-user, you’re just coding in a vacuum.”
+⛓️ CTA Loops	Keep audience hooked + expand reach	“Enjoyed this? Repost + follow for dev growth playbooks.”
+
+6. 🧰 Master Prompt for Content Generation
+Use this prompt to generate high-impact posts from an LLM:
+
+Prompt:
+
+"Write a LinkedIn post in the style of Matt Gray. Use bold, clear tone. Keep the reader emotionally engaged. Start with a powerful hook (truth, challenge, or pain). Agitate the problem. Introduce a framework or system I use to solve it. Explain it step-by-step, using short punchy lines and visual triggers. End with a powerful punchline, twist, or mindset shift. Add a soft CTA if it fits. Topic: [INSERT TOPIC]"
+
+7. 🧠 Additional Generation Templates
+➤ Contrarian Insight Post
+"Most people think [common belief].
+They’re wrong.
+Here’s the truth no one talks about:
+[Explain the shift]
+[Drop your system or method]
+Stop [old behavior].
+Start [new approach]."
+
+➤ System Breakdown Post
+"[Pain point] is killing your [result].
+I use a 3-step system that changes everything:
+
+[Step 1 – what + why]
+
+[Step 2 – what + example]
+
+[Step 3 – the payoff]
+Use it.
+It works."
+
+➤ Story-Led Post
+“I once [made mistake / failed attempt].
+It sucked.
+But it taught me this:
+[Key insight].
+Now I do it differently:
+[System or process]
+The result?
+[Outcome]
+Failure isn’t the enemy.
+Comfort is.”
+
+8. 🔄 Reuse & Repurpose Strategy
+Turn one post into 3 formats: long-form post → checklist → quote-style 1-liner
+
+Pull tweet-style lines from each LinkedIn post to reuse on X or threads
+
+Turn frameworks into carousels or PDFs for lead magnets
+
+Turn punchlines into video hooks for reels/shorts
+
+9. 🧭 The Golden Rule
+Every post must do at least one of these:
+✅ Expose a hidden truth
+✅ Deliver a useful system
+✅ Trigger a mindset shift
+✅ Paint a vivid scenario
+✅ Move the reader emotionally
+
+If it doesn’t? Delete. Rewrite. Sharpen.

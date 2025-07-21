@@ -1,0 +1,131 @@
+🧠 Tweet Content Constitution
+Framework for Crafting Magnetic Tweets That Hook, Educate, and Stick
+
+1. 🎯 Core Objective
+To write tweet threads and single tweets that instruct, provoke, and captivate, using emotionally charged storytelling and punchy language—regardless of niche (e.g., tech, self-development, business, sustainability, etc.).
+
+2. 🧱 The 4-Element Tweet Formula
+Every high-performing tweet contains at least 3 of these 4 elements:
+
+Element	Purpose	Example
+🔥 Command	Signals confidence. Frames the reader as the actor.	“Stop building side projects nobody needs.”
+🧨 Tension	Creates curiosity. Builds a story or unmet expectation.	“You’ll lose 6 months if you skip this one step.”
+🎨 Visualization	Sparks the imagination. Makes abstract concepts real.	“Imagine waking up to 10 users asking for your tool.”
+💣 Shock / Edge	Adds intensity or surprise. Breaks the reader’s scroll.	“Delete your to-do list. You’re not that productive yet.”
+
+3. 🪜 Structure of a Tweet Thread
+Use this thread skeleton:
+markdown
+Copy
+Edit
+1. Start with a bold truth or sharp hook.
+2. List numbers or frameworks (e.g., “7 reasons…” or “3 truths…”).
+3. Each point follows:
+   - Command
+   - Supporting insight
+   - Visual/example/dialogue
+4. End with a punchline, CTA, or looping idea.
+✍️ Example (Topic: Building Projects)
+Hook Tweet:
+
+Most side projects die because they’re too “clever.”
+Here’s how to build things people actually want (and how I wasted 4 months learning this):
+
+1. Solve boring problems
+The money isn't in the exciting stuff.
+It’s in that spreadsheet someone hates.
+
+2. Build for 1 person
+Not a market.
+Not a niche.
+One frustrated human with a wallet.
+
+3. Forget features. Tell a story.
+If you can't explain it in a sentence, you're not solving anything.
+
+4. Ship faster than you're comfortable with
+Polish kills momentum.
+Speed builds feedback loops.
+
+Final Tweet:
+Want fewer dead projects?
+Start ugly.
+Start useful.
+Start now.
+
+4. 🧰 Content Voice & Tone
+Attribute	Description	Use Examples
+🦅 Bold	Speak with clarity and conviction	“Stop trying to please your professor. Build to win.”
+💡 Insightful	Drop wisdom without overexplaining	“If you write code no one sees, you don’t exist online.”
+🎭 Visual	Let readers see what you mean	“They wake up, scroll, and see your tool on Product Hunt.”
+💣 Tense	Add friction, mystery, or high stakes	“This one mistake will bankrupt your app—eventually.”
+
+5. 🧬 Content Pillars (Tailored to Your Domain)
+Customize to your expertise. Example pillars for someone building tech/tools for creators or sustainability:
+
+Pillar	Example Tweet Starter
+🛠️ Technical Insight	“Don’t deploy before you do this.”
+💡 Hard-Earned Lessons	“It took me 6 months to learn this simple truth about growth…”
+🧪 Experimental Thinking	“What if you built a tool without a database?”
+⚡ Creator Empathy	“Creators don’t want tools. They want results.”
+🌍 Sustainability/Impact	“You don’t need a million trees. You need a million users who care.”
+
+6. 🧠 Master Prompt for LLM (Tweet Generator)
+Use this prompt to generate tweets or threads:
+
+Prompt Template
+
+"Write a tweet thread in this style. Use bold, confident commands. Create tension. Include vivid imagery or metaphor. Stick to one core idea or framework. Add a sharp hook and make every tweet standalone but cohesive as a whole.
+Topic: Ask for topic.
+Framework: [INSERT NUMBER or STRUCTURE, e.g., '7 signs you're building the wrong app']
+Tone: Bold, slightly edgy, clear, and visual.
+Call-to-action or looping idea at the end."
+
+7. 🚨 Do’s and Don’ts
+✅ Do:
+Make tweets visually scannable (line breaks, emojis optional, short sentences).
+
+Use examples or dialogue to make advice tangible.
+
+Start tweets with commands or unexpected claims.
+
+❌ Don’t:
+Write like a tutorial (you’re not teaching, you’re guiding).
+
+Bury the lead.
+
+Use weak phrases like “maybe,” “I think,” or “kind of.”
+
+8. ✍️ Reusable Tweet Templates
+📦 “You’re doing X wrong”
+You’re optimizing for speed.
+But speed without direction is chaos.
+Here’s how to fix it:
+
+🧱 “Build like this”
+Don’t build with features.
+Build with frustration.
+Here’s the framework I use every time I start a project:
+
+💣 “What nobody told you”
+Nobody told me this when I started:
+Users don’t care about your tech stack.
+They care about the problem you solve.
+
+9. 🔄 Reuse + Remix
+Turn a single tweet into a thread.
+
+Flip advice into a warning.
+
+“Never build in private” → “Building in private is the fastest way to irrelevance.”
+
+Reuse a structure across content pillars.
+
+10. 🧭 Final Principle
+Every tweet should do at least one of the following:
+✅ Make them feel something
+✅ Make them see something
+✅ Make them act on something
+
+If it doesn’t?
+Delete and rewrite.
