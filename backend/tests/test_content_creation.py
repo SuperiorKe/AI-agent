@@ -1,6 +1,6 @@
 # Manual test script for ConversationalAgent content creation tools.
 # Note: This is not an automated test; it prints outputs for manual inspection.
-from basic_chatbot import ConversationalAgent
+from chatbot import ConversationalAgent
 
 def test_content_creation():
     agent = ConversationalAgent()

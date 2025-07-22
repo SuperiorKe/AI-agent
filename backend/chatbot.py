@@ -43,22 +43,30 @@ if not TAVILY_API_KEY:
     else:
         raise ValueError("TAVILY_API_KEY environment variable is required")
 
-# Set the correct environment variable for the selected model
-if MODEL.startswith("openai:"):
-    os.environ["OPENAI_API_KEY"] = API_KEY
-    model_provider = "openai"
-elif MODEL.startswith("anthropic:"):
-    os.environ["ANTHROPIC_API_KEY"] = API_KEY
-    model_provider = "anthropic"
-elif MODEL.startswith("google:") or MODEL.startswith("gemini"):
-    os.environ["GOOGLE_API_KEY"] = API_KEY
-    model_provider = "google_genai"
+# Set the correct environment variable for the selected model (only if API key is provided)
+if API_KEY:  # Only set if API key is not empty
+    if MODEL.startswith("openai:"):
+        os.environ["OPENAI_API_KEY"] = API_KEY
+        model_provider = "openai"
+    elif MODEL.startswith("anthropic:"):
+        os.environ["ANTHROPIC_API_KEY"] = API_KEY
+        model_provider = "anthropic"
+    elif MODEL.startswith("google:") or MODEL.startswith("gemini"):
+        os.environ["GOOGLE_API_KEY"] = API_KEY
+        model_provider = "google_genai"
+    else:
+        model_provider = "google_genai"  # Default fallback
+        logger.warning(f"Unknown model prefix for {MODEL}, using default provider")
 else:
-    model_provider = "google_genai"  # Default fallback
-    logger.warning(f"Unknown model prefix for {MODEL}, using default provider")
+    model_provider = "google_genai"  # Default fallback when no API key
+    if not IS_DEV:
+        logger.error("No API key provided for model initialization")
 
-# Set Tavily API key
-os.environ["TAVILY_API_KEY"] = TAVILY_API_KEY
+# Set Tavily API key (only if provided)
+if TAVILY_API_KEY:
+    os.environ["TAVILY_API_KEY"] = TAVILY_API_KEY
+elif not IS_DEV:
+    logger.error("No Tavily API key provided for search functionality")
 
 logger.info(f"Using model: {MODEL}")
 # === END CONFIGURATION ===
@@ -136,6 +144,38 @@ def browse_web_page(url: str) -> str:
     """
     if not url or not url.startswith(('http://', 'https://')):
         return "Invalid URL. Please provide a full and valid URL starting with http:// or https://."
+    
+    # Security validation to prevent SSRF attacks
+    try:
+        from urllib.parse import urlparse
+        import ipaddress
+        import socket
+        
+        parsed_url = urlparse(url)
+        hostname = parsed_url.hostname
+        
+        if not hostname:
+            return "Invalid URL: No hostname found."
+        
+        # Resolve hostname to IP address
+        try:
+            ip = socket.gethostbyname(hostname)
+            ip_obj = ipaddress.ip_address(ip)
+            
+            # Block private/internal IP ranges
+            if ip_obj.is_private or ip_obj.is_loopback or ip_obj.is_link_local:
+                return "Access denied: Cannot access private, loopback, or link-local addresses for security reasons."
+                
+        except (socket.gaierror, ipaddress.AddressValueError):
+            return "Invalid URL: Cannot resolve hostname."
+            
+        # Block localhost and common internal hostnames
+        blocked_hostnames = ['localhost', '127.0.0.1', '0.0.0.0', 'metadata.google.internal']
+        if hostname.lower() in blocked_hostnames:
+            return "Access denied: Cannot access localhost or internal hostnames for security reasons."
+            
+    except Exception as e:
+        return f"URL validation error: {e}"
 
     try:
         headers = {
@@ -339,6 +379,22 @@ class ConversationalAgent:
         except Exception as e:
             logger.error(f"Error getting state snapshot: {e}")
             print(f"❌ Could not retrieve state: {e}")
+    
+    def stream_conversation(self, message: str, thread_id: str = "default-thread"):
+        """Stream conversation method for programmatic interaction"""
+        try:
+            config = {"configurable": {"thread_id": thread_id}}
+            response = self.graph.invoke({
+                "messages": [{"role": "user", "content": message}]
+            }, config=config)
+            
+            # Extract assistant response from the graph response
+            assistant_message = self._process_event_value(response)
+            return assistant_message or "No response generated"
+            
+        except Exception as e:
+            logger.error(f"Error in stream_conversation: {e}")
+            return f"Error: {e}"
 
     def run_interactive_session(self):
         """Run the interactive chat session"""

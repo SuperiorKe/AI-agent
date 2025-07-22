@@ -1,7 +1,7 @@
 import unittest
 import os
 from unittest.mock import patch
-from basic_chatbot import (
+from chatbot import (
     generate_linkedin_post,
     generate_twitter_thread,
     schedule_content,
