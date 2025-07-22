@@ -1,24 +1,23 @@
 # AI Content Assistant – Conversational Chatbot
 
 A modern, production-ready conversational AI assistant for content creation, research, and social media management.  
-Built with [LangGraph](https://github.com/langchain-ai/langgraph), [LangChain](https://github.com/langchain-ai/langchain), [Streamlit](https://streamlit.io/), and Google Gemini.  
-Includes real-time web search (Tavily), web page browsing, and a beautiful chat UI.
+Built with [LangGraph](https://github.com/langchain-ai/langgraph), [LangChain](https://github.com/langchain-ai/langchain), and powered by major LLMs like Google Gemini, OpenAI, and Anthropic.  
+Includes real-time web search (Tavily), secure web page browsing, and a robust command-line interface.
 
 ---
 
 ## Features
 
 - **Conversational AI**: Powered by Google Gemini, OpenAI, or Anthropic (configurable).
-- **Modern Chat UI**: Streamlit web app with instant user bubbles and natural assistant responses.
+- **Interactive Terminal UI**: Engage with the chatbot through a command-line interface.
 - **Web Search**: Integrates Tavily for up-to-date information.
-- **Web Page Browsing**: Reads and summarizes content from any URL.
-- **Content Creation**: Generates LinkedIn posts, Twitter threads, and more.
-- **Content Scheduling**: Simulate scheduling posts for later.
+- **Secure Web Page Browsing**: Reads content from URLs with a security allowlist to prevent abuse.
+- **Content Creation**: Generates LinkedIn posts and Twitter threads using platform-specific "constitutions" to guide tone and style.
+- **Content Scheduling**: Simulates scheduling posts for later.
 - **Extensible Tools**: Easily add or swap tools and LLMs.
-- **Robust Error Handling**: Clean error messages and dev-friendly warnings.
-- **Testing**: Includes a comprehensive test suite for all major features.
-- **Environment-based Config**: All keys/settings via `.env` file.
-- **Startup-Friendly**: Minimal, readable, and easy to extend.
+- **Robust Error Handling**: Clean error messages and developer-friendly warnings.
+- **Testing**: Includes a test suite covering core features.
+- **Environment-based Config**: All keys and settings are managed via a `.env` file.
 
 ---
 
@@ -28,7 +27,7 @@ Includes real-time web search (Tavily), web page browsing, and a beautiful chat 
 
 ```sh
 git clone <your-repo-url>
-cd AGENT
+cd <repo-name>
 ```
 
 ### 2. Create and Activate a Virtual Environment
@@ -43,87 +42,81 @@ source venv/bin/activate
 
 ### 3. Install Dependencies
 
+All required packages are listed in the `backend` directory.
+
 ```sh
-pip install -r requirements.txt
+pip install -r backend/requirements.txt
 ```
 
 ### 4. Configure Environment Variables
 
-Create a `.env` file in the project root:
+Create a `.env` file in the project root by copying the example:
+
+```sh
+cp .env.example .env
+```
+
+Now, edit the `.env` file with your API keys:
 
 ```
 # LLM configuration
-CHATBOT_MODEL=gemini-pro                # or another supported model
-CHATBOT_API_KEY=your-gemini-api-key     # Gemini, OpenAI, or Anthropic API key
+CHATBOT_MODEL="gemini-pro"              # or "openai:gpt-4-turbo", "anthropic:claude-3-sonnet-20240229"
+CHATBOT_API_KEY="your-llm-api-key"      # Gemini, OpenAI, or Anthropic API key
 
 # Tavily Search
-TAVILY_API_KEY=your-tavily-api-key      # Get from https://app.tavily.com/
+TAVILY_API_KEY="your-tavily-api-key"    # Get from https://app.tavily.com/
 
 # (Optional) LangSmith Tracing
-LANGSMITH_TRACING=true
-LANGSMITH_ENDPOINT=https://api.smith.langchain.com
-LANGSMITH_API_KEY=your-langsmith-api-key
-LANGSMITH_PROJECT=basic_chatbot
+#LANGSMITH_TRACING="true"
+#LANGSMITH_ENDPOINT="https://api.smith.langchain.com"
+#LANGSMITH_API_KEY="your-langsmith-api-key"
+#LANGSMITH_PROJECT="ai-content-assistant"
 ```
 
 ---
 
 ## Usage
 
-### **Web App (Recommended)**
-
-Launch the Streamlit chat UI:
+Run the chatbot from the root directory:
 
 ```sh
-streamlit run streamlit_app.py
+python backend/chatbot.py
 ```
 
-- Open your browser to the local URL shown (usually http://localhost:8501).
-- Type your message and press Enter.
-- Your message appears instantly; the assistant’s response appears as soon as it’s ready.
-
-### **Command-Line Chatbot**
-
-```sh
-python basic_chatbot.py
-```
-
-- Interact with the agent via the terminal.
-
----
-
-## How the Chat UI Works
-
-- **Instant Feedback:** Your message appears in the chat immediately.
-- **Natural Flow:** The assistant’s response is generated in the background and appears in its own bubble.
-- **No Delays:** No more waiting for both bubbles to appear at once.
-- **Classic Chat Experience:** Just like modern messaging apps.
+- Interact with the agent directly in your terminal.
+- Type `quit`, `exit`, or `q` to end the session.
+- Type `state` to see a debug snapshot of the conversation state.
 
 ---
 
 ## Testing
 
-Run the test suite to verify all features:
+Run the test suite from the root directory to verify all features:
 
 ```sh
-python test_basic_chatbot.py
+python -m unittest discover backend/tests
 ```
 
-- Tests cover LinkedIn post generation, Twitter threads, scheduling, web browsing, error handling, and end-to-end chat flow.
+- Tests cover content generation, tool usage, error handling, and core agent logic.
 
 ---
 
 ## Project Structure
 
 ```
-AGENT/
-  basic_chatbot.py         # Main chatbot logic and tools
-  streamlit_app.py         # Streamlit web app UI
-  test_basic_chatbot.py    # Automated tests for all features
-  requirements.txt         # All dependencies
-  README.md                # This file
-  static/                  # (Optional) Static assets for UI
-  templates/               # (Optional) HTML templates
+.
+├── backend/
+│   ├── chatbot.py             # Main chatbot logic, tools, and interactive session
+│   ├── constitution_utils.py  # Utilities for handling content constitutions
+│   ├── constitutions/         # Constitution files for different platforms
+│   ├── requirements.txt       # Python dependencies
+│   └── tests/                 # Unit and integration tests
+│       ├── test_basic_chatbot.py
+│       └── test_content_creation.py
+├── .env.example           # Example environment file
+├── .gitignore
+├── LICENSE
+└── README.md
 ```
 
 ---
@@ -132,22 +125,22 @@ AGENT/
 
 | Variable            | Description                                         |
 |---------------------|-----------------------------------------------------|
-| CHATBOT_MODEL       | LLM model string (e.g., `gemini-pro`, `openai:gpt-4.1`) |
-| CHATBOT_API_KEY     | API key for the selected LLM provider               |
-| TAVILY_API_KEY      | Tavily Search Engine API key                        |
-| LANGSMITH_TRACING   | Set to `true` to enable LangSmith tracing           |
-| LANGSMITH_ENDPOINT  | LangSmith API endpoint                              |
-| LANGSMITH_API_KEY   | LangSmith API key                                   |
-| LANGSMITH_PROJECT   | Project name for LangSmith traces                   |
+| `CHATBOT_MODEL`       | LLM model string (e.g., `gemini-pro`, `openai:gpt-4o`) |
+| `CHATBOT_API_KEY`     | API key for the selected LLM provider               |
+| `TAVILY_API_KEY`      | Tavily Search Engine API key                        |
+| `LANGSMITH_TRACING`   | Set to `true` to enable LangSmith tracing           |
+| `LANGSMITH_ENDPOINT`  | LangSmith API endpoint                              |
+| `LANGSMITH_API_KEY`   | LangSmith API key                                   |
+| `LANGSMITH_PROJECT`   | Project name for LangSmith traces                   |
 
 ---
 
 ## Extending the Chatbot
 
-- **Add More Tools:** Import and add new tools to the `tools` list in `basic_chatbot.py`.
-- **Change LLM Provider:** Update `CHATBOT_MODEL` and `CHATBOT_API_KEY` in `.env`.
-- **UI Customization:** Edit `streamlit_app.py` for new features or design tweaks.
-- **Testing:** Add or modify tests in `test_basic_chatbot.py`.
+- **Add More Tools:** Create new tool functions in `backend/chatbot.py` and add them to the `tools` list in the `ConversationalAgent` class.
+- **Change LLM Provider:** Update `CHATBOT_MODEL` and `CHATBOT_API_KEY` in your `.env` file.
+- **Add Constitutions:** Create a new `.txt` file in `backend/constitutions` to define guidelines for new content types.
+- **Add Tests:** Create new test cases in the `backend/tests` directory to validate new functionality.
 
 ---
 
@@ -156,7 +149,6 @@ AGENT/
 - [LangGraph Documentation](https://langchain-ai.github.io/langgraph/)
 - [LangChain Documentation](https://python.langchain.com/docs/)
 - [Tavily Search](https://app.tavily.com/)
-- [Streamlit](https://streamlit.io/)
 - [Google Gemini](https://ai.google.dev/)
 
 ---
