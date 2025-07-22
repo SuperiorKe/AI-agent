@@ -137,6 +137,13 @@ def browse_web_page(url: str) -> str:
     if not url or not url.startswith(('http://', 'https://')):
         return "Invalid URL. Please provide a full and valid URL starting with http:// or https://."
 
+    # Security: Only allow certain domains
+    from urllib.parse import urlparse
+    allowed_domains = ["example.com", "wikipedia.org"]
+    parsed = urlparse(url)
+    if not any(parsed.netloc.endswith(domain) for domain in allowed_domains):
+        return "Browsing is restricted to example.com and wikipedia.org for security reasons."
+
     try:
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
@@ -257,19 +264,17 @@ class ConversationalAgent:
         filtered_messages = []
         
         for msg in messages:
-            # Handle different message types
-            if hasattr(msg, "tool_calls") and getattr(msg, "tool_calls", None):
+            # Handle dict-style messages first
+            if isinstance(msg, dict):
+                content = str(msg.get("content", "")).strip()
+                if content:
+                    filtered_messages.append(msg)
+            elif hasattr(msg, "tool_calls") and getattr(msg, "tool_calls", None):
                 # Keep tool call messages
                 filtered_messages.append(msg)
-            # CORRECTED: Added a check to ensure msg.content is not None
             elif hasattr(msg, "content") and msg.content is not None:
                 # Handle LCEL message objects
                 content = str(msg.content).strip()
-                if content:
-                    filtered_messages.append(msg)
-            elif isinstance(msg, dict):
-                # Handle dict-style messages
-                content = str(msg.get("content", "")).strip()
                 if content:
                     filtered_messages.append(msg)
             else:
