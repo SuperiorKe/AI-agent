@@ -18,6 +18,7 @@ st.markdown("""
 <style>
     /* Hide the top-right corner elements (Fork, GitHub, etc.) */
     #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
     
     /* Hide the account menu at bottom */
     .stDeployButton {display: none;}
