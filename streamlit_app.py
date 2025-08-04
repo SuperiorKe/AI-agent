@@ -18,13 +18,11 @@ st.markdown("""
 <style>
     /* Hide the top-right corner elements (Fork, GitHub, etc.) */
     #MainMenu {visibility: hidden;}
-    header {visibility: hidden;}
-    footer {visibility: hidden;}
     
     /* Hide the account menu at bottom */
     .stDeployButton {display: none;}
     
-    /* Hide Streamlit logo */
+    /* Hide Streamlit logo in header */
     .stApp > header {display: none;}
     
     /* Hide the hamburger menu */
