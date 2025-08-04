@@ -24,15 +24,46 @@ Includes real-time web search (Tavily), web page browsing, and a beautiful chat 
 
 ## Quick Start
 
-### 1. Clone the Repository
+### Option 1: Docker (Recommended)
 
+#### 1. Clone the Repository
 ```sh
 git clone <your-repo-url>
-cd AGENT
+cd AI-agent
 ```
 
-### 2. Create and Activate a Virtual Environment
+#### 2. Setup Environment
+```sh
+# Copy environment template
+cp env.template .env
 
+# Edit with your API keys
+nano .env  # or use your preferred editor
+```
+
+#### 3. Run with Docker Compose
+```sh
+# Production mode
+docker-compose up -d
+
+# Development mode (with live reloading)
+docker-compose -f docker-compose.dev.yml up -d
+```
+
+#### 4. Access the Application
+Open your browser to: http://localhost:8501
+
+📖 **For detailed Docker instructions, see [DOCKER_README.md](DOCKER_README.md)**
+
+### Option 2: Local Development
+
+#### 1. Clone the Repository
+```sh
+git clone <your-repo-url>
+cd AI-agent
+```
+
+#### 2. Create and Activate a Virtual Environment
 ```sh
 python -m venv venv
 # On Windows:
@@ -41,23 +72,22 @@ venv\Scripts\activate
 source venv/bin/activate
 ```
 
-### 3. Install Dependencies
-
+#### 3. Install Dependencies
 ```sh
 pip install -r requirements.txt
 ```
 
-### 4. Configure Environment Variables
+#### 4. Configure Environment Variables
 
 Create a `.env` file in the project root:
 
 ```
 # LLM configuration
-CHATBOT_MODEL=gemini-pro                # or another supported model
-CHATBOT_API_KEY=your-gemini-api-key     # Gemini, OpenAI, or Anthropic API key
+CHATBOT_MODEL=openai:gpt-4             # or another supported model
+CHATBOT_API_KEY=your-openai-api-key    # OpenAI, Anthropic, or Google API key
 
 # Tavily Search
-TAVILY_API_KEY=your-tavily-api-key      # Get from https://app.tavily.com/
+TAVILY_API_KEY=your-tavily-api-key     # Get from https://app.tavily.com/
 
 # (Optional) LangSmith Tracing
 LANGSMITH_TRACING=true

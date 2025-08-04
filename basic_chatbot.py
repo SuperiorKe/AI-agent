@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 load_dotenv()
 
 # === CONFIGURATION ===
-MODEL = os.getenv("CHATBOT_MODEL", "gemini-pro")
+MODEL = os.getenv("CHATBOT_MODEL", "openai:gpt-4")
 API_KEY = os.getenv("CHATBOT_API_KEY", "")
 TAVILY_API_KEY = os.getenv("TAVILY_API_KEY", "")
 
@@ -49,12 +49,14 @@ if MODEL.startswith("openai:"):
 elif MODEL.startswith("anthropic:"):
     os.environ["ANTHROPIC_API_KEY"] = API_KEY
     model_provider = "anthropic"
-elif MODEL.startswith("google:") or MODEL.startswith("gemini"):
+elif MODEL.startswith("google:"):
     os.environ["GOOGLE_API_KEY"] = API_KEY
     model_provider = "google_genai"
 else:
-    model_provider = "google_genai"  # Default fallback
-    logger.warning(f"Unknown model prefix for {MODEL}, using default provider")
+    # Default fallback to OpenAI - ensure API key is set
+    os.environ["OPENAI_API_KEY"] = API_KEY
+    model_provider = "openai"
+    logger.warning(f"Unknown model prefix for {MODEL}, using OpenAI as default provider")
 
 # Set Tavily API key
 os.environ["TAVILY_API_KEY"] = TAVILY_API_KEY
@@ -62,8 +64,15 @@ os.environ["TAVILY_API_KEY"] = TAVILY_API_KEY
 logger.info(f"Using model: {MODEL}")
 # === END CONFIGURATION ===
 
+
+
+# === STATE ===
+
 class State(TypedDict):
     messages: Annotated[list, add_messages]
+
+
+# === TOOLS ===
 
 @tool
 def human_assistance(query: str) -> str:
@@ -72,12 +81,13 @@ def human_assistance(query: str) -> str:
     return interrupt({"query": query})
 
 @tool
-def generate_linkedin_post(topic: str, style: str = "professional") -> str:
-    """Generate a LinkedIn post based on topic and style preferences"""
+def generate_linkedin_post(topic: str, style: str = "academic") -> str:
+    """Generate an academic LinkedIn post for professional networking and scholarly discussion"""
     prompt = f"""
-    Create a LinkedIn post about {topic} in a {style} style.
-    Structure: Hook → Story/Insight → Key takeaway → Call to action
-    Keep it under 300 words, use 2-3 relevant hashtags.
+    Create an academic LinkedIn post about {topic} in a {style} style.
+    Structure: Research insight → Key findings → Academic implications → Call for collaboration
+    Focus on scholarly discussion, research implications, and academic networking.
+    Keep it under 300 words, use relevant academic hashtags.
     """
     llm = init_chat_model(MODEL, model_provider=model_provider)
     response = llm.invoke(prompt)
@@ -85,11 +95,13 @@ def generate_linkedin_post(topic: str, style: str = "professional") -> str:
 
 @tool
 def generate_twitter_thread(topic: str, num_tweets: int = 5) -> str:
-    """Generate a Twitter thread on the given topic"""
+    """Generate an educational Twitter thread for academic discussion and knowledge sharing"""
     prompt = f"""
-    Create a {num_tweets}-tweet thread about {topic}.
-    Start with a hook, provide value in middle tweets, end with engagement.
+    Create a {num_tweets}-tweet educational thread about {topic}.
+    Structure: Research question → Key concepts → Evidence/examples → Implications → Further reading
+    Focus on educational value, academic rigor, and knowledge sharing.
     Each tweet max 280 chars. Number them 1/{num_tweets}, 2/{num_tweets}, etc.
+    Include relevant academic hashtags and citations where appropriate.
     """
     llm = init_chat_model(MODEL, model_provider=model_provider)
     response = llm.invoke(prompt)
@@ -110,8 +122,68 @@ def post_to_linkedin(content: str) -> str:
 
 @tool
 def schedule_content(content: str, platform: str, datetime: str) -> str:
-    """Schedule content for later posting"""
-    return f"Content scheduled for {platform} at {datetime}:\n{content}"
+    """Schedule academic content for later posting"""
+    return f"Academic content scheduled for {platform} at {datetime}:\n{content}"
+
+@tool
+def generate_literature_review(topic: str) -> str:
+    """Generate a comprehensive literature review on a research topic"""
+    prompt = f"""
+    Create a comprehensive literature review on {topic}.
+    Include:
+    1. Background and context
+    2. Key theories and frameworks
+    3. Recent research findings
+    4. Research gaps and opportunities
+    5. Methodological approaches
+    6. Future research directions
+    
+    Structure this as an academic literature review with proper citations and scholarly tone.
+    """
+    llm = init_chat_model(MODEL, model_provider=model_provider)
+    response = llm.invoke(prompt)
+    return response.content
+
+@tool
+def generate_research_methodology(topic: str) -> str:
+    """Suggest appropriate research methodologies for a given topic"""
+    prompt = f"""
+    Suggest comprehensive research methodologies for studying {topic}.
+    Include:
+    1. Quantitative approaches (surveys, experiments, statistical analysis)
+    2. Qualitative approaches (interviews, case studies, content analysis)
+    3. Mixed methods approaches
+    4. Data collection strategies
+    5. Sampling techniques
+    6. Ethical considerations
+    7. Validity and reliability measures
+    
+    Provide detailed explanations for each methodology and when to use them.
+    """
+    llm = init_chat_model(MODEL, model_provider=model_provider)
+    response = llm.invoke(prompt)
+    return response.content
+
+@tool
+def generate_study_plan(subject: str) -> str:
+    """Create a comprehensive study plan for academic subjects"""
+    prompt = f"""
+    Create a detailed study plan for {subject}.
+    Include:
+    1. Learning objectives and outcomes
+    2. Weekly study schedule
+    3. Key topics and subtopics
+    4. Study strategies and techniques
+    5. Practice exercises and assessments
+    6. Recommended resources and readings
+    7. Progress tracking methods
+    8. Time management tips
+    
+    Make this practical and actionable for effective learning.
+    """
+    llm = init_chat_model(MODEL, model_provider=model_provider)
+    response = llm.invoke(prompt)
+    return response.content
 
 @tool
 def browse_web_page(url: str) -> str:
@@ -150,6 +222,8 @@ def browse_web_page(url: str) -> str:
     except Exception as e:
         return f"An unexpected error occurred: {e}"
 
+# === END TOOLS ===
+# === MAIN CLASS ===
 class ConversationalAgent:
     """Main chatbot class with improved error handling and state management"""
 
@@ -171,32 +245,44 @@ class ConversationalAgent:
             generate_linkedin_post,
             generate_twitter_thread,
             post_to_linkedin,
-            schedule_content
+            schedule_content,
+            generate_literature_review,
+            generate_research_methodology,
+            generate_study_plan
         ]
 
         # Initialize LLM with tools
         try:
             llm = init_chat_model(MODEL, model_provider=model_provider)
-            llm_with_tools = llm.bind_tools(tools, enforce_single_tool=True)
+            llm_with_tools = llm.bind_tools(tools)
         except Exception as e:
             logger.error(f"Failed to initialize LLM: {e}")
             raise
 
         # Create a system prompt to guide the LLM's tool usage
         system_prompt = (
-            "You are a helpful assistant specializing in content creation and research. You have access to:\n"
-            "1. 'tavily_search' - find information on the web\n"
-            "2. 'browse_web_page' - read specific URLs\n"
-            "3. 'generate_linkedin_post' - create LinkedIn posts\n"
-            "4. 'generate_twitter_thread' - create Twitter threads\n"
-            "5. 'post_to_linkedin' - publish to LinkedIn\n"
-            "6. 'schedule_content' - schedule posts\n"
-            "7. 'human_assistance' - request human help\n\n"
-            "For content creation: Research topic first, then generate appropriate format.\n"
-            "Always ask for clarification on tone, audience, and posting preferences.\n\n"
-            "- If the user provides a URL, use the 'browse_web_page' tool to read its content.\n"
+            "You are an expert academic research and study assistant specializing in scholarly work, literature reviews, and educational support. You have access to:\n"
+            "1. 'tavily_search' - find academic papers, research studies, and scholarly information\n"
+            "2. 'browse_web_page' - read and analyze academic articles, research papers, and educational content\n"
+            "3. 'generate_linkedin_post' - create professional academic networking posts\n"
+            "4. 'generate_twitter_thread' - create educational content threads\n"
+            "5. 'post_to_linkedin' - publish academic content\n"
+            "6. 'schedule_content' - schedule academic content\n"
+            "7. 'generate_literature_review' - create comprehensive literature reviews\n"
+            "8. 'generate_research_methodology' - suggest research methodologies\n"
+            "9. 'generate_study_plan' - create detailed study plans\n"
+            "10. 'human_assistance' - request human help\n\n"
+            "For academic research: Always prioritize peer-reviewed sources, academic databases, and scholarly content.\n"
+            "For study assistance: Provide comprehensive explanations, examples, and learning strategies.\n\n"
+            "- If the user provides a URL to an academic paper or research article, use the 'browse_web_page' tool to analyze it.\n"
             "- If the user asks you to browse a page without providing a URL, you MUST ask for one.\n"
-            "- For general questions, use the 'tavily_search' tool.\n"
+            "- For research questions, use the 'tavily_search' tool to find recent studies and academic sources.\n"
+            "- For literature reviews, use the 'generate_literature_review' tool for comprehensive academic analysis.\n"
+            "- For research methodology questions, use the 'generate_research_methodology' tool.\n"
+            "- For study planning, use the 'generate_study_plan' tool for structured learning approaches.\n"
+            "- For study help, provide detailed explanations with examples and practice problems.\n"
+            "- Always cite sources when possible and suggest additional reading materials.\n"
+            "- Focus on academic rigor, critical thinking, and evidence-based responses.\n"
             "- If the user asks for 'expert guidance', 'human help', or explicitly asks you to 'request assistance', "
             "you MUST use the 'human_assistance' tool. Do not try to answer these queries yourself."
         )

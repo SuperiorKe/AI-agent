@@ -7,15 +7,15 @@ if 'agent' not in st.session_state:
 
 # Set page config
 st.set_page_config(
-    page_title="AI Content Assistant",
-    page_icon="🤖",
+    page_title="AI Research & Study Assistant",
+    page_icon="📚",
     layout="wide"
 )
 
 # Initialize chat history
 if "messages" not in st.session_state:
     st.session_state.messages = [
-        {"role": "assistant", "content": "Hi there! I'm your AI Content Assistant. Ready to help you create amazing content, research topics, and manage your social media. What would you like to work on?"}
+        {"role": "assistant", "content": "Hello! I'm your AI Research & Study Assistant. I can help you with academic research, literature reviews, data analysis, study planning, and scholarly writing. What would you like to research or study today?"}
     ]
 
 # Initialize awaiting_response flag
@@ -24,26 +24,68 @@ if "awaiting_response" not in st.session_state:
 
 # Sidebar
 with st.sidebar:
-    st.title("AI Content Assistant")
-    st.info(
-        "A powerful AI assistant that can help you create content, research topics, and manage your social media posts."
+    st.title("📚 Research & Study Assistant")
+    st.success(
+        "A powerful AI assistant for academic research, literature reviews, study planning, and scholarly writing."
     )
     
     # Quick actions
-    st.header("Quick Actions")
+    st.header("🔬 Research Tools")
     
     def sidebar_quick_actions():
-        topic = st.text_input("Content Topic:")
-        if st.button("Generate LinkedIn Post"):
-            if topic:
-                st.session_state.messages.append({"role": "user", "content": f"Generate a LinkedIn post about {topic}"})
+        # Research topic input
+        research_topic = st.text_input("Research Topic:", placeholder="Enter your research topic...")
+        
+        # Academic research tools
+        if st.button("📖 Literature Review"):
+            if research_topic:
+                st.session_state.messages.append({"role": "user", "content": f"Help me conduct a literature review on {research_topic}. Include recent studies, key findings, and research gaps."})
                 st.session_state.awaiting_response = True
                 st.rerun()
-        if st.button("Generate Twitter Thread"):
-            if topic:
-                st.session_state.messages.append({"role": "user", "content": f"Generate a Twitter thread about {topic}"})
+        
+        if st.button("📊 Research Methodology"):
+            if research_topic:
+                st.session_state.messages.append({"role": "user", "content": f"Suggest appropriate research methodologies for studying {research_topic}. Include quantitative and qualitative approaches."})
                 st.session_state.awaiting_response = True
                 st.rerun()
+        
+        if st.button("📝 Academic Writing"):
+            if research_topic:
+                st.session_state.messages.append({"role": "user", "content": f"Help me write an academic paper introduction about {research_topic}. Include background, problem statement, and objectives."})
+                st.session_state.awaiting_response = True
+                st.rerun()
+        
+        # Study assistance tools
+        st.header("📚 Study Assistance")
+        study_subject = st.text_input("Study Subject:", placeholder="What are you studying?")
+        
+        if st.button("🎯 Study Plan"):
+            if study_subject:
+                st.session_state.messages.append({"role": "user", "content": f"Create a comprehensive study plan for {study_subject}. Include learning objectives, timeline, and study strategies."})
+                st.session_state.awaiting_response = True
+                st.rerun()
+        
+        if st.button("❓ Practice Questions"):
+            if study_subject:
+                st.session_state.messages.append({"role": "user", "content": f"Generate practice questions and problems for {study_subject} to test my understanding."})
+                st.session_state.awaiting_response = True
+                st.rerun()
+        
+        if st.button("📋 Summary & Notes"):
+            if study_subject:
+                st.session_state.messages.append({"role": "user", "content": f"Create a comprehensive summary and study notes for {study_subject} with key concepts and examples."})
+                st.session_state.awaiting_response = True
+                st.rerun()
+
+        # Creator credit below input field
+        st.markdown("""
+        <div style="text-align: center; margin-top: 1rem; margin-bottom: 2rem;">
+            <p style="color: #666; font-size: 0.9rem;">
+                Built with ❤️ by <a href="https://johnny-dev.onrender.com/" target="_blank" style="color: #667eea; text-decoration: none; font-weight: bold;">John Ndelembi</a>
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+
     sidebar_quick_actions()
 
 # Chat input with improved styling (must be before chat history rendering)
@@ -73,7 +115,7 @@ if st.session_state.awaiting_response:
     st.rerun()
 
 # Main content
-st.title("\U0001F916 AI Content Assistant")
+st.title("📚 AI Research & Study Assistant")
 
 # Display chat messages in a more chat-like format
 for message in st.session_state.messages:

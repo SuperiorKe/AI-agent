@@ -11,3 +11,15 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
+*.environ/
+*.logs
+.environ/
+environ/
+.env.txt
+.env.txt.bak
+.env.txt.bak.1
+.env.txt.bak.2
+.env.txt.bak.3
+.env.txt.bak.4
+.env.txt.bak.5
+
