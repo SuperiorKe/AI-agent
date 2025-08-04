@@ -9,8 +9,40 @@ if 'agent' not in st.session_state:
 st.set_page_config(
     page_title="AI Research & Study Assistant",
     page_icon="📚",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
+
+# Custom CSS to hide Streamlit UI elements
+st.markdown("""
+<style>
+    /* Hide the top-right corner elements (Fork, GitHub, etc.) */
+    #MainMenu {visibility: hidden;}
+    header {visibility: hidden;}
+    footer {visibility: hidden;}
+    
+    /* Hide the account menu at bottom */
+    .stDeployButton {display: none;}
+    
+    /* Hide Streamlit logo */
+    .stApp > header {display: none;}
+    
+    /* Hide the hamburger menu */
+    .stApp > div[data-testid="stToolbar"] {display: none;}
+    
+    /* Hide the "made with streamlit" footer */
+    .stApp > footer {display: none;}
+    
+    /* Additional hiding for deployment elements */
+    .stApp > div[data-testid="stDecoration"] {display: none;}
+    
+    /* Ensure clean layout */
+    .main .block-container {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+</style>
+""", unsafe_allow_html=True)
 
 # Initialize chat history
 if "messages" not in st.session_state:
