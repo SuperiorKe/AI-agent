@@ -16,8 +16,10 @@ ENV=dev python chatbot.py
 
 Set `ENV=dev` to skip API-key validation errors. For full functionality, provide real keys via env vars or a `.env` file in the repo root:
 - `CHATBOT_API_KEY` — Google Gemini (default), OpenAI, or Anthropic key
-- `TAVILY_API_KEY` — Tavily web search key
-- `CHATBOT_MODEL` — e.g. `gemini-pro`, `openai:gpt-4.1`, `anthropic:claude-3.5-sonnet`
+- `TAVILY_API_KEY` — Tavily web search key (optional; only needed for web search tool)
+- `CHATBOT_MODEL` — e.g. `gemini-2.5-flash`, `openai:gpt-4.1`, `anthropic:claude-3.5-sonnet`
+
+**Important:** The default model `gemini-pro` in the code is deprecated. Use `CHATBOT_MODEL=gemini-2.5-flash` (or another current model). The `gemini-2.0-flash` free tier quota may be exhausted on shared keys; `gemini-2.5-flash` is a reliable alternative.
 
 ### Running tests
 
